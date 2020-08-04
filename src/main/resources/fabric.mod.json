@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "gunpowder-currency",
+  "version": "${version}",
+  "name": "Gunpowder Currency",
+  "description": "Gunpowder Currency Module",
+  "license": "MIT",
+  "icon": "assets/gunpowder/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "gunpowder:modules": [
+      "io.github.gunpowder.GunpowderCurrencyModule"
+    ]
+  },
+  "depends": {
+    "gunpowder-base": ">=${gunpowder}",
+    "fabricloader": ">=0.8.9",
+    "fabric": "*"
+  }
+}
