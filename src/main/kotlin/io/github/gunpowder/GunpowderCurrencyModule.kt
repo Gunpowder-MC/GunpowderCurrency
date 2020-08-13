@@ -31,12 +31,15 @@ import io.github.gunpowder.commands.PayCommand
 import io.github.gunpowder.configs.CurrencyConfig
 import io.github.gunpowder.modelhandlers.BalanceHandler
 import io.github.gunpowder.models.BalanceTable
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import java.util.*
 import java.util.function.Supplier
 
 class GunpowderCurrencyModule : GunpowderModule {
     override val name = "currency"
     override val toggleable = true
     val gunpowder = GunpowderMod.instance
+    val bonusTimeout = mutableMapOf<UUID, Int>()
 
     override fun registerCommands() {
         gunpowder.registry.registerCommand(BalanceCommand::register)
@@ -45,6 +48,22 @@ class GunpowderCurrencyModule : GunpowderModule {
 
     override fun registerConfigs() {
         gunpowder.registry.registerConfig("gunpowder-currency.yaml", CurrencyConfig::class.java, "gunpowder-currency.yaml")
+    }
+
+    override fun registerEvents() {
+        ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
+            server.playerManager.playerList.forEach {
+                var x = bonusTimeout.getOrDefault(it.uuid, 0)
+                if (x++ > 72000) {  // 1 hour played
+                    BalanceHandler.modifyUser(it.uuid) { balance ->
+                        balance.balance += gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
+                        balance
+                    }
+                    x = 0
+                }
+                bonusTimeout[it.uuid] = x
+            }
+        })
     }
 
     override fun onInitialize() {
