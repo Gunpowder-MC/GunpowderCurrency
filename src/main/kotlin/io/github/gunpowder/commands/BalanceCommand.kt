@@ -30,7 +30,7 @@ import com.mojang.brigadier.context.CommandContext
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.builders.Command
 import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler
-import net.minecraft.command.arguments.GameProfileArgumentType
+import net.minecraft.command.argument.GameProfileArgumentType
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.LiteralText
 import kotlin.math.roundToInt

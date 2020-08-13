@@ -2,3 +2,6 @@
 
 # Balance to receive on first join
 startBalance: 1000.00
+
+# Daily bonus
+dailyBonus: 100.00

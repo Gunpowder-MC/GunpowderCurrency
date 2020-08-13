@@ -25,5 +25,6 @@
 package io.github.gunpowder.configs
 
 data class CurrencyConfig(
-        val startBalance: Double
+        val startBalance: Double,
+        val dailyBonus: Double
 )
