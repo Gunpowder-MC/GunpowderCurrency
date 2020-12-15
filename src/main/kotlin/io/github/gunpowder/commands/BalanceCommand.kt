@@ -101,7 +101,7 @@ object BalanceCommand {
         val player = GameProfileArgumentType.getProfileArgument(context, "player").first()
 
         handler.modifyUser(player.id) {
-            it.balance.add(amount.toBigDecimal())
+            it.balance = it.balance.add(amount.toBigDecimal())
             it
         }
 
@@ -117,7 +117,7 @@ object BalanceCommand {
         val player = GameProfileArgumentType.getProfileArgument(context, "player").first()
 
         handler.modifyUser(player.id) {
-            it.balance.add(amount.toBigDecimal())
+            it.balance = it.balance.subtract(amount.toBigDecimal())
             if (it.balance < (0).toBigDecimal()) {
                 it.balance = (0).toBigDecimal();
             }
@@ -133,7 +133,7 @@ object BalanceCommand {
 
     fun getBalanceTop(context: CommandContext<ServerCommandSource>): Int {
         val top = handler.getBalanceTop()
-        val joined = top.joinToString("\n") { "${context.source.minecraftServer.userCache.getByUuid(it.uuid)}: ${it.balance}" }
+        val joined = top.joinToString("\n") { "${context.source.minecraftServer.userCache.getByUuid(it.uuid)?.name}: ${it.balance}" }
         context.source.sendFeedback(LiteralText(joined), false)
         return 1
     }

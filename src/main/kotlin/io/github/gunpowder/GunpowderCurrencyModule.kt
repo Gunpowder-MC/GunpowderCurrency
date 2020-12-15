@@ -26,6 +26,7 @@ package io.github.gunpowder
 
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
+import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler as APIBalanceHandler
 import io.github.gunpowder.commands.BalanceCommand
 import io.github.gunpowder.commands.PayCommand
 import io.github.gunpowder.configs.CurrencyConfig
@@ -68,7 +69,7 @@ class GunpowderCurrencyModule : GunpowderModule {
 
     override fun onInitialize() {
         gunpowder.registry.registerTable(BalanceTable)
-        gunpowder.registry.registerModelHandler(BalanceHandler::class.java, Supplier { BalanceHandler })
+        gunpowder.registry.registerModelHandler(APIBalanceHandler::class.java, Supplier { BalanceHandler })
     }
 
 }
