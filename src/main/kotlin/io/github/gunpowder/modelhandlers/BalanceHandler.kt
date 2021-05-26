@@ -28,10 +28,7 @@ import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.module.currency.dataholders.StoredBalance
 import io.github.gunpowder.configs.CurrencyConfig
 import io.github.gunpowder.models.BalanceTable
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 import java.util.*
 import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler as APIBalanceHandler
 
@@ -40,46 +37,45 @@ object BalanceHandler : APIBalanceHandler {
         GunpowderMod.instance.database
     }
 
-    private val cache: MutableMap<UUID, StoredBalance> = mutableMapOf()
-
     private val startBalance
         get() = GunpowderMod.instance.registry.getConfig(CurrencyConfig::class.java).startBalance.toBigDecimal()
 
     init {
-        loadAllUsers()
-    }
 
-    private fun loadAllUsers() {
-        val items = db.transaction {
-            BalanceTable.selectAll().map {
-                it[BalanceTable.user] to StoredBalance(it[BalanceTable.user], it[BalanceTable.balance])
-            }.toMap()
-        }.get()
-        cache.putAll(items)
     }
 
     override fun getUser(user: UUID): StoredBalance {
-        return cache.getOrPut(user) {
-            db.transaction {
-                val userObj = BalanceTable.insert {
+        val start = startBalance
+
+        return db.transaction {
+            val row = BalanceTable.select { BalanceTable.user.eq(user) }.firstOrNull()
+
+            if (row != null) {
+                GunpowderMod.instance.logger.info("Got existing user")
+                StoredBalance(
+                    user,
+                    row[BalanceTable.balance]
+                )
+            } else {
+                GunpowderMod.instance.logger.info("Creating new user")
+                BalanceTable.insert {
                     it[BalanceTable.user] = user
-                    it[BalanceTable.balance] = startBalance
+                    it[BalanceTable.balance] = start
                 }
-                val balance = StoredBalance(
-                        user,
-                        startBalance)
-                balance
-            }.get()
-        }
+                StoredBalance(
+                    user,
+                    startBalance
+                )
+            }
+        }.get()
     }
 
     override fun updateUser(user: StoredBalance) {
-        cache[user.uuid] = user
         db.transaction {
             BalanceTable.update({
                 BalanceTable.user.eq(user.uuid)
             }) {
-                it[balance] = user.balance
+                it[BalanceTable.balance] = user.balance
             }
         }
     }

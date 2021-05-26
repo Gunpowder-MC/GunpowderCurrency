@@ -43,16 +43,16 @@ object BalanceCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         Command.builder(dispatcher) {
             command("bal", "balance", "money") {
-                executes(BalanceCommand::getBalance)
+                executes(::getBalance)
 
                 argument("player", GameProfileArgumentType.gameProfile()) {
-                    executes(BalanceCommand::getTargetBalance)
+                    executes(::getTargetBalance)
 
                     literal("set") {
                         requires { it.hasPermissionLevel(4) }
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
-                            executes(BalanceCommand::adminSet)
+                            executes(::adminSet)
                         }
                     }
 
@@ -60,7 +60,7 @@ object BalanceCommand {
                         requires { it.hasPermissionLevel(4) }
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
-                            executes(BalanceCommand::adminAdd)
+                            executes(::adminAdd)
                         }
                     }
 
@@ -68,13 +68,13 @@ object BalanceCommand {
                         requires { it.hasPermissionLevel(4) }
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
-                            executes(BalanceCommand::adminRemove)
+                            executes(::adminRemove)
                         }
                     }
                 }
 
                 literal("top") {
-                    executes(BalanceCommand::getBalanceTop)
+                    executes(::getBalanceTop)
                 }
             }
         }

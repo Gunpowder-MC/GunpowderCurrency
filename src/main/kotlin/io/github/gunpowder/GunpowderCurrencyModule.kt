@@ -26,6 +26,7 @@ package io.github.gunpowder
 
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
+import io.github.gunpowder.api.ext.getOrNull
 import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler as APIBalanceHandler
 import io.github.gunpowder.commands.BalanceCommand
 import io.github.gunpowder.commands.PayCommand
@@ -52,24 +53,28 @@ class GunpowderCurrencyModule : GunpowderModule {
     }
 
     override fun registerEvents() {
-        ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
-            server.playerManager.playerList.forEach {
-                var x = bonusTimeout.getOrDefault(it.uuid, 0)
-                if (x++ > 72000) {  // 1 hour played
-                    BalanceHandler.modifyUser(it.uuid) { balance ->
-                        balance.balance += gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
-                        balance
+        val hourly = gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
+
+        if (hourly > (0).toBigDecimal()) {
+            ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
+                server.playerManager.playerList.forEach {
+                    var x = bonusTimeout.getOrDefault(it.uuid, 0)
+                    if (x++ > 72000) {  // 1 hour played
+                        BalanceHandler.modifyUser(it.uuid) { balance ->
+                            balance.balance += hourly
+                            balance
+                        }
+                        x = 0
                     }
-                    x = 0
+                    bonusTimeout[it.uuid] = x
                 }
-                bonusTimeout[it.uuid] = x
-            }
-        })
+            })
+        }
     }
 
     override fun onInitialize() {
         gunpowder.registry.registerTable(BalanceTable)
-        gunpowder.registry.registerModelHandler(APIBalanceHandler::class.java, Supplier { BalanceHandler })
+        gunpowder.registry.registerModelHandler(APIBalanceHandler::class.java) { BalanceHandler }
     }
 
 }
