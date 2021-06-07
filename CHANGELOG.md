@@ -1,3 +1,10 @@
+# Gunpowder Currency 1.0.4
+
+- Update to 1.17
+- Fix bug with /bal top hanging the server
+
+---
+
 # Gunpowder Currency 1.0.3
 
 - Update to 1.16.5

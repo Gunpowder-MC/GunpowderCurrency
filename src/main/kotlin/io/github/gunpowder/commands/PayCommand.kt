@@ -27,9 +27,8 @@ package io.github.gunpowder.commands
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.FloatArgumentType
 import com.mojang.brigadier.context.CommandContext
-import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.builders.Command
-import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler
+import io.github.gunpowder.modelhandlers.BalanceHandler
 import net.minecraft.command.argument.GameProfileArgumentType
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.LiteralText
@@ -37,7 +36,7 @@ import kotlin.math.roundToInt
 
 object PayCommand {
     val handler by lazy {
-        GunpowderMod.instance.registry.getModelHandler(BalanceHandler::class.java)
+        BalanceHandler
     }
 
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {

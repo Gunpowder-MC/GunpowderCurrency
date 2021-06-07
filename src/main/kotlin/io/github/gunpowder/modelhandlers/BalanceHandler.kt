@@ -25,14 +25,13 @@
 package io.github.gunpowder.modelhandlers
 
 import io.github.gunpowder.api.GunpowderMod
-import io.github.gunpowder.api.module.currency.dataholders.StoredBalance
 import io.github.gunpowder.configs.CurrencyConfig
+import io.github.gunpowder.entities.StoredBalance
 import io.github.gunpowder.models.BalanceTable
 import org.jetbrains.exposed.sql.*
 import java.util.*
-import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler as APIBalanceHandler
 
-object BalanceHandler : APIBalanceHandler {
+object BalanceHandler {
     private val db by lazy {
         GunpowderMod.instance.database
     }
@@ -44,33 +43,32 @@ object BalanceHandler : APIBalanceHandler {
 
     }
 
-    override fun getUser(user: UUID): StoredBalance {
+    fun getUser(user: UUID): StoredBalance {
         val start = startBalance
 
         return db.transaction {
             val row = BalanceTable.select { BalanceTable.user.eq(user) }.firstOrNull()
 
             if (row != null) {
-                GunpowderMod.instance.logger.info("Got existing user")
                 StoredBalance(
                     user,
                     row[BalanceTable.balance]
                 )
             } else {
-                GunpowderMod.instance.logger.info("Creating new user")
+                // User does not exist in db
                 BalanceTable.insert {
                     it[BalanceTable.user] = user
                     it[BalanceTable.balance] = start
                 }
                 StoredBalance(
                     user,
-                    startBalance
+                    start
                 )
             }
         }.get()
     }
 
-    override fun updateUser(user: StoredBalance) {
+    fun updateUser(user: StoredBalance) {
         db.transaction {
             BalanceTable.update({
                 BalanceTable.user.eq(user.uuid)
@@ -80,7 +78,7 @@ object BalanceHandler : APIBalanceHandler {
         }
     }
 
-    override fun getBalanceTop(): Array<StoredBalance> {
+    fun getBalanceTop(): Array<StoredBalance> {
         return db.transaction {
             val users = BalanceTable.selectAll().orderBy(BalanceTable.balance, SortOrder.DESC).limit(10)
             users.map {
@@ -89,7 +87,7 @@ object BalanceHandler : APIBalanceHandler {
         }.get()
     }
 
-    override fun modifyUser(user: UUID, callable: (StoredBalance) -> StoredBalance) {
+    fun modifyUser(user: UUID, callable: (StoredBalance) -> StoredBalance) {
         updateUser(callable(getUser(user)))
     }
 }
