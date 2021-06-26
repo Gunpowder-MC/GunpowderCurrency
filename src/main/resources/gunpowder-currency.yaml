@@ -4,4 +4,5 @@
 startBalance: 1000.00
 
 # Hourly bonus
+# This may be overridden with permissions, then this will act as fallback.
 hourlyBonus: 10.00

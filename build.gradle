@@ -1,5 +1,5 @@
 // Plugins
 plugins {
-    id 'io.github.gunpowder' version '0.2.5.1'
+    id 'io.github.gunpowder' version '0.3.0'
 }
 

@@ -42,13 +42,16 @@ object BalanceCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         Command.builder(dispatcher) {
             command("bal", "balance", "money") {
+                permission("currency.balance", 0)
+
                 executes(::getBalance)
 
                 argument("player", GameProfileArgumentType.gameProfile()) {
+                    permission("currency.balance.other", 0)
                     executes(::getTargetBalance)
 
                     literal("set") {
-                        requires { it.hasPermissionLevel(4) }
+                        permission("currency.balance.admin.set", 4)
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
                             executes(::adminSet)
@@ -56,7 +59,7 @@ object BalanceCommand {
                     }
 
                     literal("add") {
-                        requires { it.hasPermissionLevel(4) }
+                        permission("currency.balance.admin.add", 4)
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
                             executes(::adminAdd)
@@ -64,7 +67,7 @@ object BalanceCommand {
                     }
 
                     literal("remove") {
-                        requires { it.hasPermissionLevel(4) }
+                        permission("currency.balance.admin.remove", 4)
 
                         argument("amount", FloatArgumentType.floatArg(0.0F)) {
                             executes(::adminRemove)
@@ -73,6 +76,7 @@ object BalanceCommand {
                 }
 
                 literal("top") {
+                    permission("currency.balance.top", 0)
                     executes(::getBalanceTop)
                 }
             }

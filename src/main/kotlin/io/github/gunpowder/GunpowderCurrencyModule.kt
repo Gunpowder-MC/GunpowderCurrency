@@ -26,9 +26,11 @@ package io.github.gunpowder
 
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
+import io.github.gunpowder.api.ext.getPermission
 import io.github.gunpowder.commands.BalanceCommand
 import io.github.gunpowder.commands.PayCommand
 import io.github.gunpowder.configs.CurrencyConfig
+import io.github.gunpowder.events.PermissionRegisterCallback
 import io.github.gunpowder.modelhandlers.BalanceHandler
 import io.github.gunpowder.models.BalanceTable
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -43,6 +45,8 @@ class GunpowderCurrencyModule : GunpowderModule {
     override fun registerCommands() {
         gunpowder.registry.registerCommand(BalanceCommand::register)
         gunpowder.registry.registerCommand(PayCommand::register)
+
+        PermissionRegisterCallback.EVENT.invoker().trigger("currency.bonus.[int]")
     }
 
     override fun registerConfigs() {
@@ -50,23 +54,24 @@ class GunpowderCurrencyModule : GunpowderModule {
     }
 
     override fun registerEvents() {
-        val hourly = gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
+        val defaultHourly = gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
 
-        if (hourly > (0).toBigDecimal()) {
-            ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
-                server.playerManager.playerList.forEach {
-                    var x = bonusTimeout.getOrDefault(it.uuid, 0)
-                    if (x++ > 72000) {  // 1 hour played
-                        BalanceHandler.modifyUser(it.uuid) { balance ->
-                            balance.balance += hourly
-                            balance
-                        }
-                        x = 0
+        ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
+            server.playerManager.playerList.forEach {
+                var x = bonusTimeout.getOrDefault(it.uuid, 0)
+                if (x++ > 72000) {  // 1 hour played
+                    val hourly = it.getPermission("currency.bonus.[int]", defaultHourly)
+
+                    BalanceHandler.modifyUser(it.uuid) { balance ->
+                        balance.balance += hourly
+                        balance
                     }
-                    bonusTimeout[it.uuid] = x
+
+                    x = 0
                 }
-            })
-        }
+                bonusTimeout[it.uuid] = x
+            }
+        })
     }
 
     override fun registerTables() {

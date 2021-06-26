@@ -42,6 +42,7 @@ object PayCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         Command.builder(dispatcher) {
             command("pay") {
+                permission("currency.pay", 0)
                 argument("player", GameProfileArgumentType.gameProfile()) {
                     argument("amount", FloatArgumentType.floatArg(0.0F)) {
                         executes(PayCommand::execute)

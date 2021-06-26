@@ -1,3 +1,9 @@
+# Gunpowder Currency 1.0.5
+
+- Added permissions
+
+---
+
 # Gunpowder Currency 1.0.4
 
 - Update to 1.17
