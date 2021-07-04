@@ -54,7 +54,7 @@ class GunpowderCurrencyModule : GunpowderModule {
     }
 
     override fun registerEvents() {
-        val defaultHourly = gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus.toBigDecimal()
+        val defaultHourly = gunpowder.registry.getConfig(CurrencyConfig::class.java).hourlyBonus
 
         ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { server ->
             server.playerManager.playerList.forEach {
@@ -63,7 +63,7 @@ class GunpowderCurrencyModule : GunpowderModule {
                     val hourly = it.getPermission("currency.bonus.[int]", defaultHourly)
 
                     BalanceHandler.modifyUser(it.uuid) { balance ->
-                        balance.balance += hourly
+                        balance.balance += hourly.toBigDecimal()
                         balance
                     }
 

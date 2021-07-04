@@ -1,5 +1,11 @@
 # Gunpowder Currency 1.0.5
 
+- Fixed critical bug
+
+---
+
+# Gunpowder Currency 1.0.5
+
 - Added permissions
 
 ---
