@@ -76,7 +76,7 @@ object PayCommand {
                 LiteralText("Paid $$amount to ${to.name}"),
                 false)
 
-        val targetEntity = context.source.minecraftServer.playerManager.getPlayer(to.id)
+        val targetEntity = context.source.server.playerManager.getPlayer(to.id)
 
         targetEntity?.sendMessage(
                 LiteralText("Received $$amount from ${from.entityName}"),

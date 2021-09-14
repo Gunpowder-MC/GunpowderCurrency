@@ -136,7 +136,7 @@ object BalanceCommand {
 
     fun getBalanceTop(context: CommandContext<ServerCommandSource>): Int {
         val top = handler.getBalanceTop()
-        val joined = top.joinToString("\n") { "${context.source.minecraftServer.userCache.getByUuid(it.uuid)?.name}: ${it.balance}" }
+        val joined = top.joinToString("\n") { "${context.source.server.userCache.getByUuid(it.uuid).orElse(null)?.name}: ${it.balance}" }
         context.source.sendFeedback(LiteralText(joined), false)
         return 1
     }
