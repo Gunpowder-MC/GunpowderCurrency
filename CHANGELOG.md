@@ -1,4 +1,10 @@
-# Gunpowder Currency 1.0.6
+# Gunpowder Currency 1.0.8
+
+- Update to 1.18.1
+
+---
+
+# Gunpowder Currency 1.0.7
 
 - Updated to 1.17.1 and Loom 9
 
